@@ -62,7 +62,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .flow-steps{display:flex;flex-direction:column;gap:6px}
 .flow-step{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text)}
 .step-num{min-width:22px;height:22px;border-radius:50%;background:var(--chip);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;margin-top:1px}
-.exp-img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-sm);border:1px solid var(--border);margin-top:4px}
+.carousel{position:relative;margin-top:8px;border-radius:var(--r-sm);overflow:hidden;border:1px solid var(--border)}
+.carousel-track{display:flex;transition:transform .3s ease}
+.carousel-track img{min-width:100%;width:100%;aspect-ratio:4/3;object-fit:cover;display:block;flex-shrink:0}
+.carousel-btn{position:absolute;top:50%;transform:translateY(-50%);background:var(--surface);border:1px solid var(--border);border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text);opacity:.9;-webkit-tap-highlight-color:transparent}
+.carousel-btn:hover{opacity:1}
+.carousel-btn.prev{left:8px}
+.carousel-btn.next{right:8px}
+.carousel-dots{display:flex;justify-content:center;gap:5px;padding:6px 0 2px}
+.carousel-dot{width:6px;height:6px;border-radius:50%;background:var(--border);cursor:pointer;transition:background .2s}
+.carousel-dot.on{background:var(--muted)}
 .detail-cta{display:inline-block;margin-top:.25rem;font-size:13px;font-weight:600;padding:7px 18px;border-radius:var(--r-pill);background:var(--text);color:var(--surface);text-decoration:none;align-self:flex-start}
 .detail-cta:hover{opacity:.85}
 .includes-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:.875rem 1.125rem;margin-top:1rem}
@@ -127,7 +136,7 @@ const DATA = [
     name: "Block Printing",
     hint: "Wood · Fabric · Ink",
     badge: "Meditative", badgeCls: "b-teal",
-    img: "block_kit.jpg",
+    imgs: ["block_kit.jpg", "block_kit_2.jpg"],
     desc: "A rhythmic dialogue between wood and fabric. The process of inking and pressing invites a quiet, meditative flow — each impression unique.",
     items: ["Soft Scarves", "Elegant Napkins", "Handcrafted Note Cards"],
     steps: [
@@ -142,7 +151,7 @@ const DATA = [
     name: "Embroidery",
     hint: "Thread · Hoop · Intention",
     badge: "Slow making", badgeCls: "b-purple",
-    img: "embroidery_kit.jpg",
+    imgs: ["embroidery_kit.jpg", "embroidery_kit_2.jpg"],
     desc: "A slower, intentional state of creating. Simple stitches that encourage clarity and calm — accessible to anyone, no experience needed.",
     items: ["Soft Scarves", "Elegant Napkins", "Handcrafted Note Cards"],
     steps: [
@@ -153,6 +162,21 @@ const DATA = [
     ]
   }
 ];
+
+const carIdx = {};
+function carMove(id, dir) {
+  const track = document.querySelector(`#car-${id} .carousel-track`);
+  const total = track.children.length;
+  carIdx[id] = ((carIdx[id] || 0) + dir + total) % total;
+  track.style.transform = `translateX(-${carIdx[id] * 100}%)`;
+  document.querySelectorAll(`#dots-${id} .carousel-dot`).forEach((d,i) => d.classList.toggle("on", i === carIdx[id]));
+}
+function carGo(id, i) {
+  carIdx[id] = i;
+  const track = document.querySelector(`#car-${id} .carousel-track`);
+  track.style.transform = `translateX(-${i * 100}%)`;
+  document.querySelectorAll(`#dots-${id} .carousel-dot`).forEach((d,j) => d.classList.toggle("on", j === i));
+}
 
 let activeExp = "all", openId = null;
 
@@ -167,7 +191,13 @@ function render() {
     row.innerHTML = `<div class="exp-left"><span class="exp-name">${d.name}</span><span class="exp-hint">${d.hint}</span></div><span class="exp-badge ${d.badgeCls}">${d.badge}</span>`;
     const det = document.createElement("div"); det.className = "detail" + (openId === d.id ? " open" : "");
     det.innerHTML = `
-      <div><div class="detail-heading">About this experience</div><div class="detail-body">${d.desc}</div><img class="exp-img" src="${d.img}" alt="${d.name} kit" /></div>
+      <div><div class="detail-heading">About this experience</div><div class="detail-body">${d.desc}</div>
+      <div class="carousel" id="car-${d.id}">
+        <div class="carousel-track">${d.imgs.map(src=>`<img src="${src}" alt="${d.name}" />`).join("")}</div>
+        ${d.imgs.length>1?`<button class="carousel-btn prev" onclick="carMove('${d.id}',-1)">&#8249;</button><button class="carousel-btn next" onclick="carMove('${d.id}',1)">&#8250;</button>`:""}
+      </div>
+      ${d.imgs.length>1?`<div class="carousel-dots" id="dots-${d.id}">${d.imgs.map((_,i)=>`<span class="carousel-dot${i===0?" on":""}" onclick="carGo('${d.id}',${i})"></span>`).join("")}</div>`:""}
+      </div>
       <div><div class="detail-heading">Textile bases</div><div class="items-grid">${d.items.map(i => `<span class="item-chip">${i}</span>`).join("")}</div></div>
       <div><div class="detail-heading">Event flow</div><div class="flow-steps">${d.steps.map((s, i) => `<div class="flow-step"><span class="step-num">${i + 1}</span><span>${s}</span></div>`).join("")}</div></div>
       <a class="detail-cta" href="${BOOK}" target="_blank" rel="noopener">Book this experience</a>
