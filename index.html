@@ -62,6 +62,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 .flow-steps{display:flex;flex-direction:column;gap:6px}
 .flow-step{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--text)}
 .step-num{min-width:22px;height:22px;border-radius:50%;background:var(--chip);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;margin-top:1px}
+.exp-img{width:100%;display:block;aspect-ratio:4/3;object-fit:cover;border-radius:var(--r-sm);border:1px solid var(--border);margin-top:4px}
 .detail-cta{display:inline-block;margin-top:.25rem;font-size:13px;font-weight:600;padding:7px 18px;border-radius:var(--r-pill);background:var(--text);color:var(--surface);text-decoration:none;align-self:flex-start}
 .detail-cta:hover{opacity:.85}
 .includes-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-md);padding:.875rem 1.125rem;margin-top:1rem}
@@ -84,7 +85,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
       <span class="hero-tag">One Day in November</span>
       <h1 class="hero-title">Craft on Wheels</h1>
       <p class="hero-sub">A mobile creative station for brand activations, corporate gatherings, and intimate events.</p>
-      <a class="hero-cta" href="https://onedayinnovember.in/pages/contact" target="_blank" rel="noopener">Book for your event</a>
+      <a class="hero-cta" href="https://onedayinnovember.in" target="_blank" rel="noopener">Book for your event</a>
     </div>
   </div>
 
@@ -114,18 +115,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;b
 
   <div class="contact-row">
     <span class="contact-text">Questions or custom events?</span>
-    <a class="contact-link" href="https://onedayinnovember.in/pages/contact" target="_blank" rel="noopener">onedayinnovember.in</a>
+    <a class="contact-link" href="https://onedayinnovember.in" target="_blank" rel="noopener">onedayinnovember.in</a>
   </div>
 
 </div>
 <script>
-const BOOK = "https://onedayinnovember.in/pages/contact";
+const BOOK = "https://onedayinnovember.in";
 const DATA = [
   {
     id: "block", exp: "block",
     name: "Block Printing",
     hint: "Wood · Fabric · Ink",
     badge: "Meditative", badgeCls: "b-teal",
+    img: "block_kit.jpg",
     desc: "A rhythmic dialogue between wood and fabric. The process of inking and pressing invites a quiet, meditative flow — each impression unique.",
     items: ["Soft Scarves", "Elegant Napkins", "Handcrafted Note Cards"],
     steps: [
@@ -140,6 +142,7 @@ const DATA = [
     name: "Embroidery",
     hint: "Thread · Hoop · Intention",
     badge: "Slow making", badgeCls: "b-purple",
+    img: "embroidery_kit.jpg",
     desc: "A slower, intentional state of creating. Simple stitches that encourage clarity and calm — accessible to anyone, no experience needed.",
     items: ["Soft Scarves", "Elegant Napkins", "Handcrafted Note Cards"],
     steps: [
@@ -164,7 +167,7 @@ function render() {
     row.innerHTML = `<div class="exp-left"><span class="exp-name">${d.name}</span><span class="exp-hint">${d.hint}</span></div><span class="exp-badge ${d.badgeCls}">${d.badge}</span>`;
     const det = document.createElement("div"); det.className = "detail" + (openId === d.id ? " open" : "");
     det.innerHTML = `
-      <div><div class="detail-heading">About this experience</div><div class="detail-body">${d.desc}</div></div>
+      <div><div class="detail-heading">About this experience</div><div class="detail-body">${d.desc}</div><img class="exp-img" src="${d.img}" alt="${d.name} kit" /></div>
       <div><div class="detail-heading">Textile bases</div><div class="items-grid">${d.items.map(i => `<span class="item-chip">${i}</span>`).join("")}</div></div>
       <div><div class="detail-heading">Event flow</div><div class="flow-steps">${d.steps.map((s, i) => `<div class="flow-step"><span class="step-num">${i + 1}</span><span>${s}</span></div>`).join("")}</div></div>
       <a class="detail-cta" href="${BOOK}" target="_blank" rel="noopener">Book this experience</a>
